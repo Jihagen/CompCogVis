@@ -7,6 +7,18 @@ import torch
 from torchvision.datasets import CIFAR10
 
 class InfantVisionDataset(Dataset):
+    """
+    A custom dataset class to simulate infant visual perception by applying transformations 
+    that mimic developmental changes in color sensitivity and visual acuity. It supports 
+    images from a local folder or CIFAR-10.
+
+    Args:
+        num_images (int): Number of images to load from the dataset.
+        data_source (str): Source of images, either "photos" (local folder) or "CIFAR" (CIFAR-10 dataset).
+        train (bool): If True, loads the training set (only relevant for CIFAR-10).
+        transformation_type (str): Type of transformation to apply, can be "all", "color", "acuity", or None.
+        fixed_month (int): Fixed month for all images (if provided) to apply consistent transformations by age.
+    """
     def __init__(self, num_images=1000, data_source="photos", train=True, transformation_type="all", fixed_month=None):
 
         self.transform = transforms.ToTensor()
@@ -29,9 +41,24 @@ class InfantVisionDataset(Dataset):
 
 
     def __len__(self):
+        """
+        Returns the total number of images in the dataset.
+
+        Returns:
+            int: Number of images in the dataset.
+        """
         return self.num_images
 
     def __getitem__(self, idx):
+        """
+        Retrieves an image and applies the specified transformations based on the age.
+
+        Args:
+            idx (int): Index of the image.
+
+        Returns:
+            tuple: Contains original image, transformed image, label, and age.
+        """
         if self.is_cifar:
             image, label = self.cifar10[idx]
         else:
@@ -67,6 +94,15 @@ class InfantVisionDataset(Dataset):
         return original_image, transformed_image, label, age
     
     def get_acuity_scale(self, age_months):
+        """
+        Calculates the visual acuity scale factor based on the infant's age.
+
+        Args:
+            age_months (int): Age in months.
+
+        Returns:
+            float: Acuity scale factor (lower values mean more blur).
+        """
         min_acuity = 20    
         max_acuity = 600
         max_age = 12
@@ -75,6 +111,16 @@ class InfantVisionDataset(Dataset):
         return acuity / 20
 
     def apply_acuity_scaling(self, image, scale):
+        """
+        Applies a blur effect to the image to simulate reduced visual acuity.
+
+        Args:
+            image (PIL.Image): The image to transform.
+            scale (float): Scale factor for reducing acuity.
+
+        Returns:
+            PIL.Image: Transformed image with adjusted acuity.
+        """
         width, height = image.size
         new_size = (int(width / scale), int(height / scale))
         image = image.resize(new_size, Image.BILINEAR)
@@ -83,6 +129,16 @@ class InfantVisionDataset(Dataset):
     
 
     def apply_color_transformation(self, image, month):
+        """
+        Adjusts the RGB channels of the image to simulate the progression of color perception in infants.
+
+        Args:
+            image (PIL.Image): The image to transform.
+            month (int): The age in months to determine color sensitivity.
+
+        Returns:
+            PIL.Image: Transformed image with adjusted color channels.
+        """
     # Convert the image to an RGB array for channel manipulation
         image_array = np.array(image).astype(float)  # Convert to float for precise adjustments
 

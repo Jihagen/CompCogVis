@@ -115,22 +115,21 @@ class InfantVisionDataset(Dataset):
             image_array = np.stack([red_channel, green_channel, blue_channel], axis=2)
 
         elif month == 4:
-            # Gradually introduce red and green
+            # Gradually introduce yellow, by matching red and green and suppressing blue
             red_channel = image_array[:, :, 0] * 0.4 # Visible red
             green_channel = image_array[:, :, 1] * 0.4 # Slight green visibility
             blue_channel = image_array[:, :, 2] * 0.15   # Blue remains suppressed
             image_array = np.stack([red_channel, green_channel, blue_channel], axis=2)
 
         elif month == 5:
-            # Increase sensitivity to red, green, and yellow (reduce blue)
+            # Increase sensitivity to red, green, and yellow 
             red_channel = image_array[:, :, 0] * 0.5
             green_channel = image_array[:, :, 1] * 0.5
             blue_channel = image_array[:, :, 2] * 0.25  # Blue slightly more visible
             image_array = np.stack([red_channel, green_channel, blue_channel], axis=2)
 
-        
         elif month == 6:
-            # Increase sensitivity to red, green, and yellow (reduce blue)
+            # Increase sensitivity to red, green, and blue
             red_channel = image_array[:, :, 0] * 0.55
             green_channel = image_array[:, :, 1] * 0.55
             blue_channel = image_array[:, :, 2] * 0.3  # Blue slightly more visible
